@@ -1,0 +1,24 @@
+{
+  "name": "evolution-game",
+  "version": "1.0.0",
+  "description": "JS game based on evolutionary algorithms",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxymczech/evolution-game.git"
+  },
+  "keywords": [
+    "three",
+    "evolution",
+    "game"
+  ],
+  "author": "Maksym Shcherban",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maxymczech/evolution-game/issues"
+  },
+  "homepage": "https://github.com/maxymczech/evolution-game#readme"
+}
