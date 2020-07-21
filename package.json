@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/maxymczech/evolution-game/issues"
   },
-  "homepage": "https://github.com/maxymczech/evolution-game#readme"
+  "homepage": "https://github.com/maxymczech/evolution-game#readme",
+  "dependencies": {
+    "three": "^0.118.3"
+  }
 }
