@@ -1,3 +1,6 @@
+const StylelintPlugin = require('stylelint-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 module.exports = {
   devServer: {
     contentBase: './dist',
@@ -16,6 +19,17 @@ module.exports = {
       }, {
         loader: 'eslint-loader'
       }]
+    }, {
+      test: /\.s[ac]ss$/i,
+      use: [
+        MiniCssExtractPlugin.loader,
+        'css-loader',
+        'sass-loader'
+      ],
     }]
-  }
+  },
+  plugins: [
+    new MiniCssExtractPlugin(),
+    new StylelintPlugin()
+  ]
 };
