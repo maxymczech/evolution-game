@@ -1,5 +1,9 @@
 module.exports = {
-  mode: "production",
+  devServer: {
+    contentBase: './dist',
+    port: 9000
+  },
+  mode: 'production',
   module: {
     rules: [{
       test: /\.m?js$/,
