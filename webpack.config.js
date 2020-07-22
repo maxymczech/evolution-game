@@ -8,12 +8,14 @@ module.exports = {
     rules: [{
       test: /\.m?js$/,
       exclude: /(node_modules|bower_components|dist)/,
-      use: {
+      use: [{
         loader: 'babel-loader',
         options: {
           presets: ['@babel/preset-env']
         }
-      }
+      }, {
+        loader: 'eslint-loader'
+      }]
     }]
   }
 };
