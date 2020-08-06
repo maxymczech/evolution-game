@@ -1,74 +1,78 @@
 /* global THREE */
 import './styles/app.scss';
+import config from './utils/config';
+import drawGridByRadius from './utils/grid/draw-grid-by-radius';
 import hexGeometry from './utils/geometry/hex';
 
 var camera, scene, renderer;
-var geometry, material, mesh;
+var geometry;
 
 const cameraStartPosition = [0, 1.5, 6];
 
 init();
-animate();
 createCameraControls();
 
 function init () {
-  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
+  const renderWidth = window.innerWidth;
+  const renderHeight = window.innerHeight;
+
+  camera = new THREE.PerspectiveCamera(70, renderWidth / renderHeight, 0.01, 10);
   camera.position.set(...cameraStartPosition);
 
-  const radius = 0.5;
-  const thickness = 0.1;
-  const a = radius / 2 * Math.sqrt(3);
-
-  geometry = hexGeometry(radius, thickness);
+  geometry = hexGeometry(config.hexRadiusOuter, config.hexLineThickness);
   geometry.rotateX(Math.PI / 2);
 
   scene = new THREE.Scene();
-  material = new THREE.MeshPhongMaterial({
+  const materialOptions = {
     color: 0xff0000,
     polygonOffset: true,
     polygonOffsetFactor: 1, // positive value pushes polygon further away
     polygonOffsetUnits: 1
-  });
+  };
 
-  // wireframe
-  var wireframe = new THREE.LineSegments(
-    new THREE.EdgesGeometry(geometry),
-    new THREE.LineBasicMaterial({
-      color: 0xffffff,
-      linewidth: 2
-    })
-  );
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(1, 1, 1).normalize();
+  scene.add(light);
 
-  mesh = new THREE.Mesh(geometry, material);
-  mesh.position.set(0, 0, 0);
-  mesh.add(wireframe);
-  scene.add(mesh);
-
-  for (let angle = Math.PI / 6; angle < 2 * Math.PI; angle += Math.PI / 3) {
-    wireframe = new THREE.LineSegments(
-      new THREE.EdgesGeometry(geometry),
-      new THREE.LineBasicMaterial({
-        color: 0xffffff,
-        linewidth: 2
-      })
-    );
-    mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(2 * a * Math.cos(angle), 0, 2 * a * Math.sin(angle));
-    mesh.add(wireframe);
-    scene.add(mesh);
-  }
+  drawGridByRadius(5, scene, geometry, materialOptions, 0xffffff, 0xff0000);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(renderWidth, renderHeight);
   document.body.appendChild(renderer.domElement);
-}
 
-function animate () {
-  requestAnimationFrame(animate);
+  var raycaster = new THREE.Raycaster();
+  var mouse = new THREE.Vector2();
 
-  // mesh.rotation.x += 0.02;
+  function onMouseMove (event) {
+    event.preventDefault();
+    mouse.x = (event.clientX / renderWidth) * 2 - 1;
+    mouse.y = -(event.clientY / renderHeight) * 2 + 1;
+  }
 
-  renderer.render(scene, camera);
+  let highlighted = null;
+
+  function render () {
+    raycaster.setFromCamera(mouse, camera);
+    var intersects = raycaster.intersectObjects(scene.children);
+
+    if (highlighted && (
+      !intersects || !intersects[0] || intersects[0].object !== highlighted
+    )) {
+      highlighted.material.color.set(0xff0000);
+    }
+
+    if (intersects && intersects.length) {
+      intersects[0].object.material.color.set(0xffffff);
+      highlighted = intersects[0].object;
+    }
+    renderer.render(scene, camera);
+
+    window.requestAnimationFrame(render);
+  }
+
+  window.addEventListener('mousemove', onMouseMove, false);
+
+  render();
 }
 
 function createCameraControls () {
