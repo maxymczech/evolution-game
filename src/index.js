@@ -59,6 +59,7 @@ function init () {
       !intersects || !intersects[0] || intersects[0].object !== highlighted
     )) {
       highlighted.material.color.set(0xff0000);
+      highlighted = null;
     }
 
     if (intersects && intersects.length) {
