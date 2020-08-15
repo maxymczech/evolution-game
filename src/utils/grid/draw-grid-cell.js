@@ -2,7 +2,7 @@
 
 import config from '../config';
 
-export default function (q, r, scene, geometry, materialOptions, color) {
+export default function (q, r, scene, geometry, materialOptions, lineColor) {
   const qVec = new THREE.Vector3(config.hexVecQ.x, config.hexVecQ.y, config.hexVecQ.z);
   const rVec = new THREE.Vector3(config.hexVecR.x, config.hexVecR.y, config.hexVecR.z);
 
@@ -13,7 +13,7 @@ export default function (q, r, scene, geometry, materialOptions, color) {
   const wireframe = new THREE.LineSegments(
     new THREE.EdgesGeometry(geometry),
     new THREE.LineBasicMaterial({
-      color,
+      lineColor,
       linewidth: 2
     })
   );

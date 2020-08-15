@@ -1,6 +1,6 @@
 /* global THREE */
 
-export default function hexGeometry (radius, depth) {
+export default function hexGeometry (radius, depth, elevation) {
   const shape = new THREE.Shape();
   shape.moveTo(radius, 0);
   for (let i = 1; i <= 6; i++) {
@@ -13,11 +13,12 @@ export default function hexGeometry (radius, depth) {
 
   var extrudeSettings = {
     steps: 2,
-    depth,
+    depth: depth * elevation,
     bevelEnabled: false
   };
 
   const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+  geometry.rotateX(Math.PI / 2);
 
   return geometry;
 }

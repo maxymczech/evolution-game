@@ -1,11 +1,12 @@
 /* global THREE */
 import './styles/app.scss';
-import config from './utils/config';
-import drawGridByRadius from './utils/grid/draw-grid-by-radius';
-import hexGeometry from './utils/geometry/hex';
+// import config from './utils/config';
+// import drawGridByRadius from './utils/grid/draw-grid-by-radius';
+import drawGridFromJSON from './utils/grid/draw-grid-from-json';
+import gridData from './data/grids/grid-default.json';
+import parseGridJSONData from './utils/grid/parse-grid-json-data';
 
 var camera, scene, renderer;
-var geometry;
 
 const cameraStartPosition = [0, 1.5, 6];
 
@@ -19,9 +20,6 @@ function init () {
   camera = new THREE.PerspectiveCamera(70, renderWidth / renderHeight, 0.01, 10);
   camera.position.set(...cameraStartPosition);
 
-  geometry = hexGeometry(config.hexRadiusOuter, config.hexLineThickness);
-  geometry.rotateX(Math.PI / 2);
-
   scene = new THREE.Scene();
   const materialOptions = {
     color: 0xff0000,
@@ -34,7 +32,9 @@ function init () {
   light.position.set(1, 1, 1).normalize();
   scene.add(light);
 
-  drawGridByRadius(5, scene, geometry, materialOptions, 0xffffff, 0xff0000);
+  // drawGridByRadius(5, scene, geometry, materialOptions, 0xffffff, 0xff0000);
+  parseGridJSONData(gridData);
+  drawGridFromJSON(gridData, scene, materialOptions);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(renderWidth, renderHeight);
