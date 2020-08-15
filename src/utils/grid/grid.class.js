@@ -25,8 +25,8 @@ export default class Grid {
   fromJSONData (gridData) {
     if (Array.isArray(gridData)) {
       gridData.forEach(cellData => {
-        const { elevation, isFree, q, r } = cellData;
-        this.addCell(q, r, elevation, isFree);
+        const { color, elevation, isFree, q, r } = cellData;
+        this.addCell(q, r, elevation, color, isFree);
       });
     }
   }

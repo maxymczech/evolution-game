@@ -3,12 +3,18 @@ import drawGridCell from './draw-grid-cell';
 import hexGeometry from '../geometry/hex';
 
 export default class GridCell {
+  #color
   #elevation
   #q
   #r
   #isFree
 
-  constructor (q, r, elevation, isFree) {
+  get color () {
+    return this.#color;
+  }
+
+  constructor (q, r, elevation, color, isFree) {
+    this.#color = color;
     this.#elevation = elevation;
     this.#isFree = isFree;
     this.#q = q;
@@ -18,7 +24,7 @@ export default class GridCell {
   draw (scene) {
     const geometry = hexGeometry(config.hexRadiusOuter, config.hexLineThickness, this.#elevation);
     const materialOptions = Object.assign({
-      color: 0xff0000
+      color: this.#color
     }, config.cellMaterialOptions);
     drawGridCell(this.#q, this.#r, scene, geometry, materialOptions);
   }

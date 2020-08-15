@@ -1,6 +1,6 @@
 /* global THREE */
 import './styles/app.scss';
-// import config from './utils/config';
+import config from './utils/config';
 // import drawGridByRadius from './utils/grid/draw-grid-by-radius';
 import Grid from './utils/grid/grid.class';
 // import drawGridFromJSON from './utils/grid/draw-grid-from-json';
@@ -58,12 +58,12 @@ function init () {
     if (highlighted && (
       !intersects || !intersects[0] || intersects[0].object !== highlighted
     )) {
-      highlighted.material.color.set(0xff0000);
+      highlighted.material.emissive.setHex(0);
       highlighted = null;
     }
 
     if (intersects && intersects.length) {
-      intersects[0].object.material.color.set(0xffffff);
+      intersects[0].object.material.emissive.setHex(config.highlightEmissiveColor);
       highlighted = intersects[0].object;
     }
     renderer.render(scene, camera);

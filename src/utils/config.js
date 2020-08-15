@@ -18,5 +18,6 @@ export default {
   hexVecR: new THREE.Vector3(0, 0, 2 * a),
   hexLineThickness: 0.1,
   hexRadiusInner: a,
-  hexRadiusOuter: radius
+  hexRadiusOuter: radius,
+  highlightEmissiveColor: 0xaaaa00
 };
