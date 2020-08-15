@@ -2,7 +2,8 @@
 import './styles/app.scss';
 // import config from './utils/config';
 // import drawGridByRadius from './utils/grid/draw-grid-by-radius';
-import drawGridFromJSON from './utils/grid/draw-grid-from-json';
+import Grid from './utils/grid/grid.class';
+// import drawGridFromJSON from './utils/grid/draw-grid-from-json';
 import gridData from './data/grids/grid-default.json';
 import parseGridJSONData from './utils/grid/parse-grid-json-data';
 
@@ -21,12 +22,6 @@ function init () {
   camera.position.set(...cameraStartPosition);
 
   scene = new THREE.Scene();
-  const materialOptions = {
-    color: 0xff0000,
-    polygonOffset: true,
-    polygonOffsetFactor: 1, // positive value pushes polygon further away
-    polygonOffsetUnits: 1
-  };
 
   const light = new THREE.DirectionalLight(0xffffff, 1);
   light.position.set(1, 1, 1).normalize();
@@ -34,7 +29,12 @@ function init () {
 
   // drawGridByRadius(5, scene, geometry, materialOptions, 0xffffff, 0xff0000);
   parseGridJSONData(gridData);
-  drawGridFromJSON(gridData, scene, materialOptions);
+  // drawGridFromJSON(gridData, scene, materialOptions);
+
+  const grid = new Grid();
+  grid.fromJSONData(gridData);
+  grid.draw(scene);
+  grid.findPath({ q: 1, r: 1 }, { q: 0, r: 0 });
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(renderWidth, renderHeight);
