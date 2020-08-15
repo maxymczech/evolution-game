@@ -18,7 +18,7 @@ export default function hexGeometry (radius, depth, elevation) {
   };
 
   const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-  geometry.rotateX(Math.PI / 2);
+  geometry.rotateX(-Math.PI / 2);
 
   return geometry;
 }
