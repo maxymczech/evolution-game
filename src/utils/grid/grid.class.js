@@ -1,12 +1,13 @@
 import GridCell from './grid-cell.class';
+import TinyQueue from 'tinyqueue';
 import config from '../config';
 
 export default class Grid {
   #cells
 
-  addCell (q, r, elevation, isFree) {
+  addCell (q, r, elevation, color, isFree) {
     const key = this.cellKey(q, r);
-    this.#cells[key] = new GridCell(q, r, elevation, isFree);
+    this.#cells[key] = new GridCell(q, r, elevation, color, isFree);
   }
 
   cellKey (q, r) {
@@ -28,13 +29,73 @@ export default class Grid {
     this.#cells = {};
   }
 
+  distance (from, to) {
+    return (Math.abs(from.q - to.q) + Math.abs(from.q + from.r - to.q - to.r) + Math.abs(from.r - to.r)) / 2;
+  }
+
   draw (scene) {
     Object.entries(this.#cells).forEach(([key, cell]) => {
       cell.draw(scene);
     });
   }
 
-  findPath ({ q: qFrom, r: rFrom }, { q: qTo, r: rTo }) {
+  findPath (from, to) {
+    const keyFrom = this.cellKey(from.q, from.r);
+    const keyGoal = this.cellKey(to.q, to.r);
+
+    const openSet = new TinyQueue([from], (a, b) => {
+      return fScore[this.cellKey(a.q, a.r)] - fScore[this.cellKey(b.q, b.r)];
+    });
+    const openSetHash = {};
+    openSetHash[keyFrom] = true;
+
+    const cameFrom = {};
+
+    const gScore = {};
+    gScore[keyFrom] = 0;
+
+    const fScore = {};
+    fScore[keyFrom] = this.distance(from, to);
+
+    while (openSet.length) {
+      const current = openSet.pop();
+      const keyCurrent = this.cellKey(current.q, current.r);
+      openSetHash[keyCurrent] = false;
+
+      if (keyCurrent === keyGoal) {
+        const path = [];
+        let node = current;
+        let keyNode = this.cellKey(node.q, node.r);
+        while (keyFrom !== keyNode) {
+          path.push(node);
+          node = cameFrom[keyNode];
+          keyNode = this.cellKey(node.q, node.r);
+        }
+        path.reverse();
+        return path;
+      }
+
+      const neighbors = this.cellNeighbors(current.q, current.r, true);
+      neighbors.forEach(neighbor => {
+        const keyNeighbor = this.cellKey(neighbor.q, neighbor.r);
+
+        // TODO: add custom distance calculation based on elevation difference and terrain type
+        const gScoreTentative = gScore[keyCurrent] + 1;
+
+        const gScoreNeighbor = gScore[keyNeighbor] || Infinity;
+
+        if (gScoreTentative < gScoreNeighbor) {
+          cameFrom[keyNeighbor] = current;
+          gScore[keyNeighbor] = gScoreTentative;
+          fScore[keyNeighbor] = gScore[keyNeighbor] + this.distance(neighbor, to);
+          if (!openSetHash[keyNeighbor]) {
+            openSetHash[keyNeighbor] = true;
+            openSet.push(neighbor);
+          }
+        }
+      });
+    }
+    return false;
   }
 
   fromJSONData (gridData) {

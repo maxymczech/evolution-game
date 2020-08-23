@@ -5,6 +5,7 @@ import hexGeometry from '../geometry/hex';
 export default class GridCell {
   #color
   #elevation
+  #mesh
   #q
   #r
   #isFree
@@ -17,6 +18,7 @@ export default class GridCell {
     this.#color = color;
     this.#elevation = elevation;
     this.#isFree = isFree;
+    this.#mesh = null;
     this.#q = q;
     this.#r = r;
   }
@@ -27,11 +29,11 @@ export default class GridCell {
       color: this.#color
     }, config.cellMaterialOptions);
 
-    const sceneMesh = drawGridCell(this.#q, this.#r, scene, geometry, materialOptions);
+    this.#mesh = drawGridCell(this.#q, this.#r, scene, geometry, materialOptions);
 
     // TODO: rethink storing coordinates in scene object...
-    sceneMesh._q = this.#q;
-    sceneMesh._r = this.#r;
+    this.#mesh._q = this.#q;
+    this.#mesh._r = this.#r;
   }
 
   get elevation () {
@@ -40,6 +42,10 @@ export default class GridCell {
 
   get isFree () {
     return this.#isFree;
+  }
+
+  get mesh () {
+    return this.#mesh;
   }
 
   get q () {

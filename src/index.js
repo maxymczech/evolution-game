@@ -35,7 +35,7 @@ function init () {
   const grid = new Grid();
   grid.fromJSONData(gridData);
   grid.draw(scene);
-  grid.findPath({ q: 1, r: 1 }, { q: 0, r: 0 });
+  grid.findPath({ q: 5, r: -1 }, { q: 4, r: 1 });
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(renderWidth, renderHeight);
