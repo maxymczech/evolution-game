@@ -35,7 +35,11 @@ function init () {
   const grid = new Grid();
   grid.fromJSONData(gridData);
   grid.draw(scene);
-  grid.findPath({ q: 5, r: -1 }, { q: 4, r: 1 });
+
+  const path = grid.findPath({ q: 5, r: -1 }, { q: 4, r: 1 });
+  path && path.forEach(cell => {
+    grid.highlightCell(cell.q, cell.r);
+  });
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(renderWidth, renderHeight);

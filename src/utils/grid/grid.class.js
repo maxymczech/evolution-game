@@ -71,6 +71,7 @@ export default class Grid {
           node = cameFrom[keyNode];
           keyNode = this.cellKey(node.q, node.r);
         }
+        path.push(from);
         path.reverse();
         return path;
       }
@@ -110,6 +111,13 @@ export default class Grid {
   getCell (q, r) {
     const key = this.cellKey(q, r);
     return this.#cells[key] || null;
+  }
+
+  highlightCell (q, r, highlight = true) {
+    const cell = this.getCell(q, r);
+    if (cell) {
+      cell.mesh.material.emissive.setHex(config.highlightEmissiveColor);
+    }
   }
 
   removeCell (q, r) {
