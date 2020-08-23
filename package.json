@@ -26,11 +26,12 @@
   "homepage": "https://github.com/maxymczech/evolution-game",
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.10.4",
-    "three": "^0.119.1"
+    "three": "^0.119.1",
+    "tinyqueue": "^2.0.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
-    "@babel/core": "^7.11.1",
+    "@babel/core": "^7.11.4",
     "@babel/preset-env": "^7.11.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
