@@ -9,7 +9,7 @@ import parseGridJSONData from './utils/grid/parse-grid-json-data';
 
 var camera, scene, renderer;
 
-const cameraStartPosition = [0, 1.5, 6];
+const cameraStartPosition = [0, 4, 6];
 
 init();
 createCameraControls();
@@ -20,6 +20,7 @@ function init () {
 
   camera = new THREE.PerspectiveCamera(70, renderWidth / renderHeight, 0.01, 10);
   camera.position.set(...cameraStartPosition);
+  camera.rotation.x = -Math.PI / 4;
 
   scene = new THREE.Scene();
 
@@ -62,9 +63,10 @@ function init () {
       highlighted = null;
     }
 
-    if (intersects && intersects.length) {
+    if (intersects && intersects.length && intersects[0].object !== highlighted) {
       intersects[0].object.material.emissive.setHex(config.highlightEmissiveColor);
       highlighted = intersects[0].object;
+      console.log(intersects[0].object._q, intersects[0].object._r);
     }
     renderer.render(scene, camera);
 

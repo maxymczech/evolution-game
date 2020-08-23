@@ -26,7 +26,12 @@ export default class GridCell {
     const materialOptions = Object.assign({
       color: this.#color
     }, config.cellMaterialOptions);
-    drawGridCell(this.#q, this.#r, scene, geometry, materialOptions);
+
+    const sceneMesh = drawGridCell(this.#q, this.#r, scene, geometry, materialOptions);
+
+    // TODO: rethink storing coordinates in scene object...
+    sceneMesh._q = this.#q;
+    sceneMesh._r = this.#r;
   }
 
   get elevation () {

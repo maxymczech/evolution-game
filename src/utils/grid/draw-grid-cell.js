@@ -22,4 +22,5 @@ export default function (q, r, scene, geometry, materialOptions, lineColor = 0xf
   mesh.position.set(rVec.x, rVec.y, rVec.z);
   mesh.add(wireframe);
   scene.add(mesh);
+  return mesh;
 }
