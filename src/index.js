@@ -1,4 +1,4 @@
-/* global THREE */
+/* global STLLoader, THREE */
 import './styles/app.scss';
 import config from './utils/config';
 // import drawGridByRadius from './utils/grid/draw-grid-by-radius';
@@ -6,6 +6,7 @@ import Grid from './utils/grid/grid.class';
 // import drawGridFromJSON from './utils/grid/draw-grid-from-json';
 import gridData from './data/grids/grid-default.json';
 import parseGridJSONData from './utils/grid/parse-grid-json-data';
+import creatureData from './data/creatures/charmander.json';
 
 var camera, scene, renderer;
 
@@ -36,9 +37,27 @@ function init () {
   grid.fromJSONData(gridData);
   grid.draw(scene);
 
-  const path = grid.findPath({ q: 5, r: -1 }, { q: 4, r: 1 });
-  path && path.forEach(cell => {
-    grid.highlightCell(cell.q, cell.r);
+  // const path = grid.findPath({ q: 5, r: -1 }, { q: 4, r: 1 });
+  // path && path.forEach(cell => {
+  //   grid.highlightCell(cell.q, cell.r);
+  // });
+
+  const loader = new STLLoader();
+  loader.load(creatureData.modelFile, function (geometry) {
+    geometry.scale(1 / creatureData.scaleFactor, 1 / creatureData.scaleFactor, 1 / creatureData.scaleFactor);
+    geometry.rotateX(creatureData.defaultRotation.x);
+    geometry.rotateY(creatureData.defaultRotation.y);
+    geometry.rotateZ(creatureData.defaultRotation.z);
+
+    const materialOptions = Object.assign({
+      color: parseInt(creatureData.defaultColor)
+    }, config.cellMaterialOptions);
+
+    const material = new THREE.MeshPhongMaterial(materialOptions);
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, config.hexLineThickness * 2, 0);
+
+    scene.add(mesh);
   });
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -63,14 +82,14 @@ function init () {
     if (highlighted && (
       !intersects || !intersects[0] || intersects[0].object !== highlighted
     )) {
-      highlighted.material.emissive.setHex(0);
-      highlighted = null;
+      // highlighted.material.emissive.setHex(0);
+      // highlighted = null;
     }
 
     if (intersects && intersects.length && intersects[0].object !== highlighted) {
-      intersects[0].object.material.emissive.setHex(config.highlightEmissiveColor);
-      highlighted = intersects[0].object;
-      console.log(intersects[0].object._q, intersects[0].object._r);
+      // intersects[0].object.material.emissive.setHex(config.highlightEmissiveColor);
+      // highlighted = intersects[0].object;
+      // console.log(intersects[0].object._q, intersects[0].object._r);
     }
     renderer.render(scene, camera);
 

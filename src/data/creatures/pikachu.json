@@ -1,0 +1,15 @@
+{
+  "centerOffset": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "defaultColor": "0xffff00",
+  "defaultRotation": {
+    "x": -1.5707963267948966,
+    "y": 0,
+    "z": 0
+  },
+  "modelFile": "./models/pikachu.stl",
+  "scaleFactor": 80
+}
