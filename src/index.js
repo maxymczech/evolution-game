@@ -10,8 +10,6 @@ import creatureData from './data/creatures/charmander.json';
 
 var camera, scene, renderer;
 
-const cameraStartPosition = [0, 4, 6];
-
 init();
 createCameraControls();
 
@@ -19,8 +17,14 @@ function init () {
   const renderWidth = window.innerWidth;
   const renderHeight = window.innerHeight;
 
-  camera = new THREE.PerspectiveCamera(70, renderWidth / renderHeight, 0.01, 10);
-  camera.position.set(...cameraStartPosition);
+  const cameraPosition = [...config.cameraOptions.cameraStartPosition];
+  camera = new THREE.PerspectiveCamera(
+    config.cameraOptions.perspective.fov,
+    renderWidth / renderHeight,
+    config.cameraOptions.perspective.near,
+    config.cameraOptions.perspective.far
+  );
+  camera.position.set(...cameraPosition);
   camera.rotation.x = -Math.PI / 4;
 
   scene = new THREE.Scene();
@@ -66,14 +70,37 @@ function init () {
 
   var raycaster = new THREE.Raycaster();
   var mouse = new THREE.Vector2();
+  const mapScrollState = {
+    scrollX: 0,
+    scrollY: 0
+  };
 
   function onMouseMove (event) {
     event.preventDefault();
+
+    // Mouse coordinates for hex highlight
     mouse.x = (event.clientX / renderWidth) * 2 - 1;
     mouse.y = -(event.clientY / renderHeight) * 2 + 1;
+
+    // Scroll map
+    const margin = config.cameraOptions.mapScrollMargin;
+    if (event.clientX <= margin) {
+      mapScrollState.scrollX = -1;
+    } else if (event.clientX >= renderWidth - margin) {
+      mapScrollState.scrollX = 1;
+    } else {
+      mapScrollState.scrollX = 0;
+    }
+    if (event.clientY <= margin) {
+      mapScrollState.scrollY = -1;
+    } else if (event.clientY >= renderHeight - margin) {
+      mapScrollState.scrollY = 1;
+    } else {
+      mapScrollState.scrollY = 0;
+    }
   }
 
-  let highlighted = null;
+  const highlighted = null;
 
   function render () {
     raycaster.setFromCamera(mouse, camera);
@@ -91,8 +118,15 @@ function init () {
       // highlighted = intersects[0].object;
       // console.log(intersects[0].object._q, intersects[0].object._r);
     }
-    renderer.render(scene, camera);
 
+    if (mapScrollState.scrollX || mapScrollState.scrollY) {
+      const cameraSpeed = config.cameraOptions.mapScrollSpeed;
+      cameraPosition[0] += mapScrollState.scrollX * cameraSpeed;
+      cameraPosition[2] += mapScrollState.scrollY * cameraSpeed;
+      camera.position.set(...cameraPosition);
+    }
+
+    renderer.render(scene, camera);
     window.requestAnimationFrame(render);
   }
 
@@ -109,9 +143,9 @@ function createCameraControls () {
   container.style.left = '0';
 
   [
-    ['x', cameraStartPosition[0]],
-    ['y', cameraStartPosition[1]],
-    ['z', cameraStartPosition[2]]
+    ['x', config.cameraOptions.cameraStartPosition[0]],
+    ['y', config.cameraOptions.cameraStartPosition[1]],
+    ['z', config.cameraOptions.cameraStartPosition[2]]
   ].forEach(([prop, value]) => {
     const slider = document.createElement('input');
     slider.style.width = '300px';

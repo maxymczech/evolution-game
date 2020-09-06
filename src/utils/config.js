@@ -9,6 +9,16 @@ export default {
     { q: -1, r: 0 }, { q: 1, r: 0 },
     { q: -1, r: 1 }, { q: 1, r: -1 }
   ],
+  cameraOptions: {
+    cameraStartPosition: [0, 4, 6],
+    mapScrollMargin: 100,
+    mapScrollSpeed: 0.2,
+    perspective: {
+      far: 20,
+      fov: 70,
+      near: 0.1,
+    }
+  },
   cellMaterialOptions: {
     polygonOffset: true,
     polygonOffsetFactor: 1, // positive value pushes polygon further away
