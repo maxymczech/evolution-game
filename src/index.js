@@ -121,8 +121,16 @@ function init () {
 
     if (mapScrollState.scrollX || mapScrollState.scrollY) {
       const cameraSpeed = config.cameraOptions.mapScrollSpeed;
+      const ceilX = grid.radius * config.cameraOptions.mapScrollRadiusCoefficient;
+      const ceilZ = grid.radius * config.cameraOptions.mapScrollRadiusCoefficient;
+      const ceilXMin = config.cameraOptions.cameraStartPosition[0] - ceilX;
+      const ceilXMax = config.cameraOptions.cameraStartPosition[0] + ceilX;
+      const ceilZMin = config.cameraOptions.cameraStartPosition[2] - ceilZ;
+      const ceilZMax = config.cameraOptions.cameraStartPosition[2] + ceilZ;
       cameraPosition[0] += mapScrollState.scrollX * cameraSpeed;
+      cameraPosition[0] = Math.min(ceilXMax, Math.max(ceilXMin, cameraPosition[0]));
       cameraPosition[2] += mapScrollState.scrollY * cameraSpeed;
+      cameraPosition[2] = Math.min(ceilZMax, Math.max(ceilZMin, cameraPosition[2]));
       camera.position.set(...cameraPosition);
     }
 

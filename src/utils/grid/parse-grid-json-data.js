@@ -1,5 +1,5 @@
 export default function (gridData) {
-  gridData.forEach(cellData => {
+  gridData.hexData.forEach(cellData => {
     cellData.color = parseInt(cellData.color);
   });
 }

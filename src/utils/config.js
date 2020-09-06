@@ -12,11 +12,12 @@ export default {
   cameraOptions: {
     cameraStartPosition: [0, 4, 6],
     mapScrollMargin: 100,
+    mapScrollRadiusCoefficient: 0.5,
     mapScrollSpeed: 0.2,
     perspective: {
       far: 20,
       fov: 70,
-      near: 0.1,
+      near: 0.1
     }
   },
   cellMaterialOptions: {

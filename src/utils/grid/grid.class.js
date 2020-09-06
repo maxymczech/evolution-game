@@ -4,6 +4,7 @@ import config from '../config';
 
 export default class Grid {
   #cells
+  #radius
 
   addCell (q, r, elevation, color, isFree) {
     const key = this.cellKey(q, r);
@@ -100,8 +101,9 @@ export default class Grid {
   }
 
   fromJSONData (gridData) {
-    if (Array.isArray(gridData)) {
-      gridData.forEach(cellData => {
+    this.#radius = gridData.radius;
+    if (Array.isArray(gridData.hexData)) {
+      gridData.hexData.forEach(cellData => {
         const { color, elevation, isFree, q, r } = cellData;
         this.addCell(q, r, elevation, color, isFree);
       });
@@ -118,6 +120,10 @@ export default class Grid {
     if (cell) {
       cell.mesh.material.emissive.setHex(config.highlightEmissiveColor);
     }
+  }
+
+  get radius () {
+    return this.#radius;
   }
 
   removeCell (q, r) {
