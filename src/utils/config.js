@@ -10,7 +10,7 @@ export default {
     { q: -1, r: 1 }, { q: 1, r: -1 }
   ],
   cameraOptions: {
-    cameraRotationSpeed: 0.1,
+    cameraRotationSpeed: 3,
     cameraStartPosition: [0, 4, 6],
     downwardAngle: -Math.PI / 3,
     mapScrollMargin: 100,

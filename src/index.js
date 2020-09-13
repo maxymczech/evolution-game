@@ -112,9 +112,7 @@ function init () {
   const cameraWorldDirection = new THREE.Vector3();
   const cameraTmp = new THREE.Vector3();
 
-  window.raycasterGround = raycasterGround;
-  window.groundPlane = groundPlane;
-
+  let lastCameraRotation = 0;
   function rotateCameraAroundCentralAxis (angle) {
     camera.getWorldDirection(cameraWorldDirection);
     raycasterGround.set(camera.position, cameraWorldDirection);
@@ -125,8 +123,8 @@ function init () {
       cameraTmp.set(x, camera.position.y, z);
       const d = cameraTmp.distanceTo(camera.position);
 
-      camera.rotateOnWorldAxis(camera.up, angle);
-      console.log(intersection.point);
+      camera.rotateOnWorldAxis(camera.up, angle - lastCameraRotation);
+      lastCameraRotation = angle;
       camera.position.set(
         x + d * Math.sin(angle),
         camera.position.y,
@@ -141,6 +139,7 @@ function init () {
     mouse.isDown = false;
   }
 
+  let cameraAxisAngle = 0;
   function onMouseMove (event) {
     event.preventDefault();
 
@@ -168,7 +167,9 @@ function init () {
     // Rotate camera
     if (mouse.isDown) {
       const dx = mouse.position.x - mouse.positionAtClick.x;
-      console.log(dx);
+      cameraAxisAngle -= dx * config.cameraOptions.cameraRotationSpeed;
+      mouse.positionAtClick.x = mouse.position.x;
+      rotateCameraAroundCentralAxis(cameraAxisAngle);
     }
   }
 
