@@ -19,6 +19,7 @@ export default function (q, r, scene, geometry, materialOptions, lineColor = 0xf
   );
   const material = new THREE.MeshPhongMaterial(materialOptions);
   const mesh = new THREE.Mesh(geometry, material);
+  mesh.layers.set(config.objectLayers.gridTiles);
   mesh.position.set(rVec.x, rVec.y, rVec.z);
   mesh.add(wireframe);
   scene.add(mesh);

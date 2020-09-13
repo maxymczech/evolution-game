@@ -25,13 +25,20 @@ function init () {
     config.cameraOptions.perspective.far
   );
   camera.position.set(...cameraPosition);
-  camera.rotation.x = -Math.PI / 4;
+  camera.rotation.x = config.cameraOptions.downwardAngle;
+  // window.camera = camera;
 
   scene = new THREE.Scene();
 
   const light = new THREE.DirectionalLight(0xffffff, 1);
   light.position.set(1, 1, 1).normalize();
   scene.add(light);
+
+  // Enable layers
+  Object.entries(config.objectLayers).forEach(([key, layer]) => {
+    light.layers.enable(layer);
+    camera.layers.enable(layer);
+  });
 
   // drawGridByRadius(5, scene, geometry, materialOptions, 0xffffff, 0xff0000);
   parseGridJSONData(gridData);
@@ -59,6 +66,7 @@ function init () {
 
     const material = new THREE.MeshPhongMaterial(materialOptions);
     const mesh = new THREE.Mesh(geometry, material);
+    mesh.layers.set(config.objectLayers.creatures);
     mesh.position.set(0, config.hexLineThickness * 2, 0);
 
     scene.add(mesh);
@@ -68,19 +76,77 @@ function init () {
   renderer.setSize(renderWidth, renderHeight);
   document.body.appendChild(renderer.domElement);
 
-  var raycaster = new THREE.Raycaster();
-  var mouse = new THREE.Vector2();
+  var raycasterGrid = new THREE.Raycaster();
+  raycasterGrid.layers.enable(config.objectLayers.gridTiles);
+  const mouse = {
+    isDown: false,
+    position: new THREE.Vector2(),
+    positionAtClick: new THREE.Vector2()
+  };
   const mapScrollState = {
     scrollX: 0,
     scrollY: 0
   };
 
+  function onMouseDown (event) {
+    mouse.isDown = true;
+    mouse.positionAtClick.x = mouse.position.x;
+    mouse.positionAtClick.y = mouse.position.y;
+  }
+
+  // Virtual plane
+  const planeSize = config.hexRadiusOuter * 4 * grid.radius * config.groundPlaneSizeMultiplier;
+  const planeGeometry = new THREE.PlaneGeometry(planeSize, planeSize);
+  planeGeometry.rotateX(-Math.PI / 2);
+  const planeMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    opacity: 0.1,
+    transparent: true
+  });
+  const groundPlane = new THREE.Mesh(planeGeometry, planeMaterial);
+  groundPlane.layers.set(config.objectLayers.groundPlane);
+  scene.add(groundPlane);
+
+  const raycasterGround = new THREE.Raycaster();
+  raycasterGround.layers.enable(config.objectLayers.groundPlane);
+  const cameraWorldDirection = new THREE.Vector3();
+  const cameraTmp = new THREE.Vector3();
+
+  window.raycasterGround = raycasterGround;
+  window.groundPlane = groundPlane;
+
+  function rotateCameraAroundCentralAxis (angle) {
+    camera.getWorldDirection(cameraWorldDirection);
+    raycasterGround.set(camera.position, cameraWorldDirection);
+    const [intersection] = raycasterGround.intersectObject(groundPlane);
+    if (intersection) {
+      const { x, z } = intersection.point;
+
+      cameraTmp.set(x, camera.position.y, z);
+      const d = cameraTmp.distanceTo(camera.position);
+
+      camera.rotateOnWorldAxis(camera.up, angle);
+      console.log(intersection.point);
+      camera.position.set(
+        x + d * Math.sin(angle),
+        camera.position.y,
+        z + d * Math.cos(-angle)
+      );
+    }
+  }
+  window.rotateCameraAroundCentralAxis = rotateCameraAroundCentralAxis;
+
+  // UI Events
+  function onMouseUp (event) {
+    mouse.isDown = false;
+  }
+
   function onMouseMove (event) {
     event.preventDefault();
 
     // Mouse coordinates for hex highlight
-    mouse.x = (event.clientX / renderWidth) * 2 - 1;
-    mouse.y = -(event.clientY / renderHeight) * 2 + 1;
+    mouse.position.x = (event.clientX / renderWidth) * 2 - 1;
+    mouse.position.y = -(event.clientY / renderHeight) * 2 + 1;
 
     // Scroll map
     const margin = config.cameraOptions.mapScrollMargin;
@@ -98,13 +164,19 @@ function init () {
     } else {
       mapScrollState.scrollY = 0;
     }
+
+    // Rotate camera
+    if (mouse.isDown) {
+      const dx = mouse.position.x - mouse.positionAtClick.x;
+      console.log(dx);
+    }
   }
 
   const highlighted = null;
 
   function render () {
-    raycaster.setFromCamera(mouse, camera);
-    var intersects = raycaster.intersectObjects(scene.children);
+    raycasterGrid.setFromCamera(mouse.position, camera);
+    var intersects = raycasterGrid.intersectObjects(scene.children);
 
     if (highlighted && (
       !intersects || !intersects[0] || intersects[0].object !== highlighted
@@ -131,7 +203,7 @@ function init () {
       cameraPosition[0] = Math.min(ceilXMax, Math.max(ceilXMin, cameraPosition[0]));
       cameraPosition[2] += mapScrollState.scrollY * cameraSpeed;
       cameraPosition[2] = Math.min(ceilZMax, Math.max(ceilZMin, cameraPosition[2]));
-      camera.position.set(...cameraPosition);
+      // camera.position.set(...cameraPosition);
     }
 
     renderer.render(scene, camera);
@@ -139,6 +211,8 @@ function init () {
   }
 
   window.addEventListener('mousemove', onMouseMove, false);
+  window.addEventListener('mousedown', onMouseDown, false);
+  window.addEventListener('mouseup', onMouseUp, false);
 
   render();
 }
